@@ -14,3 +14,12 @@ type Task struct {
 	AssignetToID int64     `json:"assignetTo"`
 	CreatedAt    time.Time `json:"createdAt"`
 }
+
+type User struct {
+	ID        int64     `json:"id"`
+	FirstName string    `json:"firstname"`
+	LastName  string    `json:"lastname"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	CreateAt  time.Time `json:"createAt"`
+}

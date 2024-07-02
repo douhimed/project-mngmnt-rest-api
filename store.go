@@ -6,6 +6,7 @@ type Store interface {
 
 	// USERS
 	CreateUser() error
+	GetUserByID(string) (*User, error)
 
 	// TASKS
 	CreateTask(task *Task) (*Task, error)
@@ -24,6 +25,20 @@ func NewStore(db *sql.DB) *Storage {
 
 func (s *Storage) CreateUser() error {
 	return nil
+}
+
+func (s *Storage) GetUserByID(id string) (*User, error) {
+	var u User
+
+	err := s.db.QueryRow("SELECT id, firstName, lastName, email, createAt FROM user where id = ?", id).Scan(
+		&u.ID,
+		&u.FirstName,
+		&u.LastName,
+		&u.Email,
+		&u.CreateAt,
+	)
+
+	return &u, err
 }
 
 func (s *Storage) CreateTask(t *Task) (*Task, error) {

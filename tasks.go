@@ -20,8 +20,8 @@ func NewTaskService(s Store) *TaskService {
 }
 
 func (ts *TaskService) RegisterRoutes(r *mux.Router) {
-	r.HandleFunc("/tasks", ts.handleCreateTask).Methods("POST")
-	r.HandleFunc("/tasks/{id}", ts.handleGetTask).Methods("GET")
+	r.HandleFunc("/tasks", WithJWT(ts.handleCreateTask, ts.store)).Methods("POST")
+	r.HandleFunc("/tasks/{id}", WithJWT(ts.handleGetTask, ts.store)).Methods("GET")
 }
 
 func (ts *TaskService) handleCreateTask(w http.ResponseWriter, r *http.Request) {
