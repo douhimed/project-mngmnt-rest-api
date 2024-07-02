@@ -9,6 +9,7 @@ type Store interface {
 
 	// TASKS
 	CreateTask(task *Task) (*Task, error)
+	GetTask(string) (*Task, error)
 }
 
 type Storage struct {
@@ -39,4 +40,19 @@ func (s *Storage) CreateTask(t *Task) (*Task, error) {
 
 	t.ID = id
 	return t, nil
+}
+
+func (s *Storage) GetTask(id string) (*Task, error) {
+	var t Task
+
+	err := s.db.QueryRow("SELECT id, name, status, projectID, assignedToID, createdAt FROM task where id = ?", id).Scan(
+		&t.ID,
+		&t.Name,
+		&t.Status,
+		&t.ProjectID,
+		&t.AssignetToID,
+		&t.CreatedAt,
+	)
+
+	return &t, err
 }

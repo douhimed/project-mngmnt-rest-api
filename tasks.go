@@ -13,7 +13,7 @@ type TaskService struct {
 	store Store
 }
 
-func NewTAskService(s Store) *TaskService {
+func NewTaskService(s Store) *TaskService {
 	return &TaskService{
 		store: s,
 	}
@@ -38,12 +38,12 @@ func (ts *TaskService) handleCreateTask(w http.ResponseWriter, r *http.Request) 
 
 	err = json.Unmarshal(body, task)
 	if err != nil {
-		WriteJSON(w, http.StatusInternalServerError, ErrorResponse{Error: "invalide request payload"})
+		WriteJSON(w, http.StatusBadRequest, ErrorResponse{Error: "invalide request payload"})
 		return
 	}
 
 	if err := validateTask(task); err != nil {
-		WriteJSON(w, http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		WriteJSON(w, http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -57,7 +57,16 @@ func (ts *TaskService) handleCreateTask(w http.ResponseWriter, r *http.Request) 
 }
 
 func (ts *TaskService) handleGetTask(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
 
+	t, err := ts.store.GetTask(id)
+	if err != nil {
+		WriteJSON(w, http.StatusNotFound, ErrorResponse{Error: "task not found"})
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, t)
 }
 
 var errNameRequired = errors.New("name is required")
