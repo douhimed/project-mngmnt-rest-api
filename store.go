@@ -5,7 +5,7 @@ import "database/sql"
 type Store interface {
 
 	// USERS
-	CreateUser() error
+	CreateUser(*User) (*User, error)
 	GetUserByID(string) (*User, error)
 
 	// TASKS
@@ -23,8 +23,20 @@ func NewStore(db *sql.DB) *Storage {
 	}
 }
 
-func (s *Storage) CreateUser() error {
-	return nil
+func (s *Storage) CreateUser(u *User) (*User, error) {
+	rows, err := s.db.Exec("INSERT INTO user (firstName, lastName, email, password) VALUES (?, ?, ?, ?)", u.FirstName, u.LastName, u.Email, u.Password)
+
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := rows.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	u.ID = id
+	return u, nil
 }
 
 func (s *Storage) GetUserByID(id string) (*User, error) {

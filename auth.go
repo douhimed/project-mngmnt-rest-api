@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -70,4 +72,18 @@ func validateJWT(tokenStr string) (*jwt.Token, error) {
 
 		return []byte(secret), nil
 	})
+}
+
+func CreateJWT(secret []byte, userID int64) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"userID":    strconv.Itoa(int(userID)),
+		"expiredAt": time.Now().Add(time.Hour * 24 * 120).Unix(),
+	})
+
+	tokenStr, err := token.SignedString(secret)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenStr, nil
 }
